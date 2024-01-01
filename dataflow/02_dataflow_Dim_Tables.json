@@ -230,7 +230,6 @@
 				"derivedColumnSurrogatekeyUpdated sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
-				"          CustomerSK as integer,",
 				"          CustomerID as integer,",
 				"          CompanyName as string,",
 				"          SalesPerson as string",
