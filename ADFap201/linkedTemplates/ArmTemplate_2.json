@@ -351,6 +351,14 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
+				"variables": {
+					"CompanyName": {
+						"type": "String"
+					},
+					"SalesPerson": {
+						"type": "String"
+					}
+				},
 				"annotations": []
 			},
 			"dependsOn": []
@@ -2298,7 +2306,6 @@
 						"derivedColumnSurrogatekeyUpdated sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          CustomerSK as integer,",
 						"          CustomerID as integer,",
 						"          CompanyName as string,",
 						"          SalesPerson as string",
