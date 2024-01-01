@@ -1,0 +1,81 @@
+{
+	"name": "06_dataflow_LoadJsonObject",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "customer1json",
+						"type": "DatasetReference"
+					},
+					"name": "CustomerJsonstream"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable6",
+						"type": "DatasetReference"
+					},
+					"name": "JsonMulitpleobjectTosqlpooldb"
+				}
+			],
+			"transformations": [
+				{
+					"name": "Jsonmultipleobject"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          customerid as integer,",
+				"          customername as string,",
+				"          registered as boolean,",
+				"          courses as string[],",
+				"          details as (mobile as string, city as string)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'arrayOfDocuments') ~> CustomerJsonstream",
+				"CustomerJsonstream foldDown(unroll(courses, courses),",
+				"     mapColumn(",
+				"          courses,",
+				"          customername,",
+				"          Registered = registered,",
+				"          Mobile = details.mobile,",
+				"          city = details.city,",
+				"          customerid",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> Jsonmultipleobject",
+				"Jsonmultipleobject sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          CustomerID as integer,",
+				"          CustomerName as string,",
+				"          Registered as boolean,",
+				"          Courses as string,",
+				"          Mobile as string,",
+				"          City as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CustomerID = customerid,",
+				"          CustomerName = customername,",
+				"          Registered,",
+				"          Courses = courses,",
+				"          Mobile,",
+				"          City = city",
+				"     )) ~> JsonMulitpleobjectTosqlpooldb"
+			]
+		}
+	}
+}

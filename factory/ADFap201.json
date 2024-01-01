@@ -1,0 +1,9 @@
+{
+	"name": "ADFap201",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "3edd0987-adcc-492b-8b95-c8e11432a97f",
+		"tenantId": "833c4366-8f14-4e3f-aabb-a4fb22ff0e8c"
+	}
+}

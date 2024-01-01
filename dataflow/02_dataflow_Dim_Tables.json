@@ -1,0 +1,293 @@
+{
+	"name": "02_dataflow_Dim_Tables",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "customertblcsv",
+						"type": "DatasetReference"
+					},
+					"name": "CustomerStream"
+				},
+				{
+					"dataset": {
+						"referenceName": "Product",
+						"type": "DatasetReference"
+					},
+					"name": "ProductStream"
+				},
+				{
+					"dataset": {
+						"referenceName": "ProductModelTable",
+						"type": "DatasetReference"
+					},
+					"name": "ProductModelStream"
+				},
+				{
+					"dataset": {
+						"referenceName": "ProductCategory",
+						"type": "DatasetReference"
+					},
+					"name": "ProductCategory"
+				},
+				{
+					"dataset": {
+						"referenceName": "DimCustomer_dw",
+						"type": "DatasetReference"
+					},
+					"name": "Maxsurrogatekey"
+				},
+				{
+					"dataset": {
+						"referenceName": "DimCustomer_dw",
+						"type": "DatasetReference"
+					},
+					"name": "DimCustomerLatest"
+				},
+				{
+					"dataset": {
+						"referenceName": "DimProduct_dw",
+						"type": "DatasetReference"
+					},
+					"name": "DimProductLatest"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DimCustomer_dw",
+						"type": "DatasetReference"
+					},
+					"name": "DimCustomer"
+				},
+				{
+					"dataset": {
+						"referenceName": "DimProduct_dw",
+						"type": "DatasetReference"
+					},
+					"name": "DimProductStream"
+				},
+				{
+					"name": "Cachesurrogetmaxvaluesink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ProductjoinProductModel"
+				},
+				{
+					"name": "joinProductCategory"
+				},
+				{
+					"name": "selectProductcolumn"
+				},
+				{
+					"name": "surrogatekeyProduct"
+				},
+				{
+					"name": "selectcustomercolumn"
+				},
+				{
+					"name": "surrogateKeyCustomersk"
+				},
+				{
+					"name": "derivedColumnSurrogatekeyUpdated"
+				},
+				{
+					"name": "NotExistCustomerDImTble"
+				},
+				{
+					"name": "Notexistdimproducttbl"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CustomerID as string,",
+				"          CompanyName as string,",
+				"          SalesPerson as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> CustomerStream",
+				"source(output(",
+				"          ProductID as integer,",
+				"          Name as string,",
+				"          ProductNumber as string,",
+				"          Color as string,",
+				"          StandardCost as decimal(19,4),",
+				"          ListPrice as decimal(19,4),",
+				"          Size as string,",
+				"          Weight as decimal(8,2),",
+				"          ProductCategoryID as integer,",
+				"          ProductModelID as integer,",
+				"          SellStartDate as timestamp,",
+				"          SellEndDate as timestamp,",
+				"          DiscontinuedDate as timestamp,",
+				"          ThumbNailPhoto as binary,",
+				"          ThumbnailPhotoFileName as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> ProductStream",
+				"source(output(",
+				"          ProductModelID as integer,",
+				"          Name as string,",
+				"          CatalogDescription as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> ProductModelStream",
+				"source(output(",
+				"          ProductCategoryID as integer,",
+				"          ParentProductCategoryID as integer,",
+				"          Name as string,",
+				"          rowguid as string,",
+				"          ModifiedDate as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> ProductCategory",
+				"source(output(",
+				"          CustomerSK as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: '\\nSELECT MAX([CustomerSK]) as CustomerSK FROM [dbo].[DimCustomer]',",
+				"     format: 'query') ~> Maxsurrogatekey",
+				"source(output(",
+				"          CustomerSK as integer,",
+				"          CustomerID as integer,",
+				"          CompanyName as string,",
+				"          SalesPerson as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimCustomerLatest",
+				"source(output(",
+				"          ProductSK as integer,",
+				"          ProductID as integer,",
+				"          ProductModelID as integer,",
+				"          ProductcategoryID as integer,",
+				"          ProductName as string,",
+				"          ProductModelName as string,",
+				"          ProductCategoryName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimProductLatest",
+				"Notexistdimproducttbl, ProductModelStream join(ProductStream@ProductModelID == ProductModelStream@ProductModelID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> ProductjoinProductModel",
+				"ProductjoinProductModel, ProductCategory join(ProductStream@ProductCategoryID == ProductCategory@ProductCategoryID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinProductCategory",
+				"joinProductCategory select(mapColumn(",
+				"          ProductID,",
+				"          ProductModelID = ProductStream@ProductModelID,",
+				"          ProductCategoryID = ProductStream@ProductCategoryID,",
+				"          ProductName = ProductStream@Name,",
+				"          ProductModleName = ProductModelStream@Name,",
+				"          ProductCategoryName = ProductCategory@Name",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectProductcolumn",
+				"selectProductcolumn keyGenerate(output({[ProductSK]} as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogatekeyProduct",
+				"NotExistCustomerDImTble select(mapColumn(",
+				"          CustomerID,",
+				"          CompanyName,",
+				"          SalesPerson",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectcustomercolumn",
+				"selectcustomercolumn keyGenerate(output(CustomerSK as long),",
+				"     startAt: 1L,",
+				"     stepValue: 1L) ~> surrogateKeyCustomersk",
+				"surrogateKeyCustomersk derive(CustomerSK = CustomerSK) ~> derivedColumnSurrogatekeyUpdated",
+				"CustomerStream, DimCustomerLatest exists(CustomerStream@CustomerID == toString(DimCustomerLatest@CustomerID),",
+				"     negate:true,",
+				"     broadcast: 'auto')~> NotExistCustomerDImTble",
+				"ProductStream, DimProductLatest exists(ProductStream@ProductID == DimProductLatest@ProductID,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> Notexistdimproducttbl",
+				"derivedColumnSurrogatekeyUpdated sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          CustomerSK as integer,",
+				"          CustomerID as integer,",
+				"          CompanyName as string,",
+				"          SalesPerson as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CustomerSK,",
+				"          CustomerID,",
+				"          CompanyName,",
+				"          SalesPerson",
+				"     )) ~> DimCustomer",
+				"surrogatekeyProduct sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          ProductSK as integer,",
+				"          ProductID as integer,",
+				"          ProductModelID as integer,",
+				"          ProductcategoryID as integer,",
+				"          ProductName as string,",
+				"          ProductModelName as string,",
+				"          ProductCategoryName as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          ProductSK = {[ProductSK]},",
+				"          ProductID,",
+				"          ProductModelID,",
+				"          ProductcategoryID = ProductCategoryID,",
+				"          ProductName,",
+				"          ProductCategoryName",
+				"     )) ~> DimProductStream",
+				"Maxsurrogatekey sink(validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     keys:['CustomerSK'],",
+				"     store: 'cache',",
+				"     format: 'inline',",
+				"     output: false,",
+				"     saveOrder: 1,",
+				"     mapColumn(",
+				"          CustomerSK",
+				"     )) ~> Cachesurrogetmaxvaluesink"
+			]
+		}
+	}
+}

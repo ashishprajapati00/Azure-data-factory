@@ -1,0 +1,17 @@
+{
+	"name": "SQLDW",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "apsqldw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "logdata_parquet"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

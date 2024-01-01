@@ -1,0 +1,36 @@
+{
+	"name": "DimCustomer_dw",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "apsqldw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "CustomerSK",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CustomerID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CompanyName",
+				"type": "varchar"
+			},
+			{
+				"name": "SalesPerson",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DimCustomer"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

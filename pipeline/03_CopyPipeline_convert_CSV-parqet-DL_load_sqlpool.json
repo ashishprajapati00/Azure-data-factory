@@ -1,0 +1,365 @@
+{
+	"name": "03_CopyPipeline_convert_CSV-parqet-DL_load_sqlpool",
+	"properties": {
+		"activities": [
+			{
+				"name": "convert_CSV-parqet-DL",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Id",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Id",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Correlationid",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Correlationid",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Operationname",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Operationname",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Status",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Status",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Eventcategory",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Eventcategory",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Level",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Level",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Time",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Time",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Subscription",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Subscription",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Eventinitiatedby",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Eventinitiatedby",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Resourcetype",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Resourcetype",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							},
+							{
+								"source": {
+									"name": "Resourcegroup",
+									"type": "String",
+									"physicalType": "String"
+								},
+								"sink": {
+									"name": "Resourcegroup",
+									"type": "String",
+									"physicalType": "UTF8"
+								}
+							}
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DL_csv",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "convert_csv_parquet",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "load_converted-parquet_sqlpool",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "convert_CSV-parqet-DL",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ParquetSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "ParquetReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlDWSink",
+						"allowCopyCommand": true
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "Id",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Correlationid",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Correlationid",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Operationname",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Operationname",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Status",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Status",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Eventcategory",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Eventcategory",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Level",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Level",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Time",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Time",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Subscription",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Subscription",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Eventinitiatedby",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Eventinitiatedby",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Resourcetype",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Resourcetype",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Resourcegroup",
+									"type": "String"
+								},
+								"sink": {
+									"name": "Resourcegroup",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "convert_csv_parquet",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DestinationDataset_a61",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-12-31T03:36:28Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
