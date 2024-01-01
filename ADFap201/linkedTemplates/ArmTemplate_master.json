@@ -1,0 +1,200 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ADFap201"
+		},
+		"ADFDL201_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ADFDL201'"
+		},
+		"ADFapDL201_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ADFapDL201'"
+		},
+		"DL201_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'DL201'"
+		},
+		"DimCustomer_Table_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'DimCustomer_Table'"
+		},
+		"DimProductTable_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'DimProductTable'"
+		},
+		"apsqldb201_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'apsqldb201'"
+		},
+		"apsqldw_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'apsqldw'"
+		},
+		"apsqldw201_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'apsqldw201'"
+		},
+		"apsynapseworkspace201_sqlpool_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'apsynapseworkspace201_sqlpool'"
+		},
+		"linkedService1_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'linkedService1'"
+		},
+		"ADFDL201_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://storagedatalake201.dfs.core.windows.net/"
+		},
+		"ADFapDL201_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://storagedatalake201.dfs.core.windows.net/"
+		},
+		"DL201_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://storagedatalake201.dfs.core.windows.net/"
+		},
+		"linkedService1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://storagedatalake201.dfs.core.windows.net/"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "ADFap201_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"ADFDL201_accountKey": {
+						"value": "[parameters('ADFDL201_accountKey')]"
+					},
+					"ADFapDL201_accountKey": {
+						"value": "[parameters('ADFapDL201_accountKey')]"
+					},
+					"DL201_accountKey": {
+						"value": "[parameters('DL201_accountKey')]"
+					},
+					"DimCustomer_Table_connectionString": {
+						"value": "[parameters('DimCustomer_Table_connectionString')]"
+					},
+					"DimProductTable_connectionString": {
+						"value": "[parameters('DimProductTable_connectionString')]"
+					},
+					"apsqldb201_connectionString": {
+						"value": "[parameters('apsqldb201_connectionString')]"
+					},
+					"apsqldw_connectionString": {
+						"value": "[parameters('apsqldw_connectionString')]"
+					},
+					"apsqldw201_connectionString": {
+						"value": "[parameters('apsqldw201_connectionString')]"
+					},
+					"apsynapseworkspace201_sqlpool_connectionString": {
+						"value": "[parameters('apsynapseworkspace201_sqlpool_connectionString')]"
+					},
+					"linkedService1_accountKey": {
+						"value": "[parameters('linkedService1_accountKey')]"
+					},
+					"ADFDL201_properties_typeProperties_url": {
+						"value": "[parameters('ADFDL201_properties_typeProperties_url')]"
+					},
+					"ADFapDL201_properties_typeProperties_url": {
+						"value": "[parameters('ADFapDL201_properties_typeProperties_url')]"
+					},
+					"DL201_properties_typeProperties_url": {
+						"value": "[parameters('DL201_properties_typeProperties_url')]"
+					},
+					"linkedService1_properties_typeProperties_url": {
+						"value": "[parameters('linkedService1_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "ADFap201_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFap201_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "ADFap201_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFap201_ArmTemplate_1')]"
+			]
+		},
+		{
+			"name": "ADFap201_ArmTemplate_3",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'ADFap201_ArmTemplate_2')]"
+			]
+		}
+	]
+}

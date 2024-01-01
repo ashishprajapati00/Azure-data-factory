@@ -1,0 +1,57 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "ADFap201"
+		},
+		"ADFDL201_accountKey": {
+			"value": ""
+		},
+		"ADFapDL201_accountKey": {
+			"value": ""
+		},
+		"DL201_accountKey": {
+			"value": ""
+		},
+		"DimCustomer_Table_connectionString": {
+			"value": ""
+		},
+		"DimProductTable_connectionString": {
+			"value": ""
+		},
+		"apsqldb201_connectionString": {
+			"value": ""
+		},
+		"apsqldw_connectionString": {
+			"value": ""
+		},
+		"apsqldw201_connectionString": {
+			"value": ""
+		},
+		"apsynapseworkspace201_sqlpool_connectionString": {
+			"value": ""
+		},
+		"linkedService1_accountKey": {
+			"value": ""
+		},
+		"ADFDL201_properties_typeProperties_url": {
+			"value": "https://storagedatalake201.dfs.core.windows.net/"
+		},
+		"ADFapDL201_properties_typeProperties_url": {
+			"value": "https://storagedatalake201.dfs.core.windows.net/"
+		},
+		"DL201_properties_typeProperties_url": {
+			"value": "https://storagedatalake201.dfs.core.windows.net/"
+		},
+		"linkedService1_properties_typeProperties_url": {
+			"value": "https://storagedatalake201.dfs.core.windows.net/"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
