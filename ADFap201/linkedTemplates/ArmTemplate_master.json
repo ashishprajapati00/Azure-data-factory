@@ -124,6 +124,9 @@
 					"linkedService1_accountKey": {
 						"value": "[parameters('linkedService1_accountKey')]"
 					},
+					"BlobcontainerTrigger_properties_typeProperties_scope": {
+						"value": "[parameters('BlobcontainerTrigger_properties_typeProperties_scope')]"
+					},
 					"ADFDL201_properties_typeProperties_url": {
 						"value": "[parameters('ADFDL201_properties_typeProperties_url')]"
 					},
@@ -213,9 +216,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"BlobcontainerTrigger_properties_typeProperties_scope": {
-						"value": "[parameters('BlobcontainerTrigger_properties_typeProperties_scope')]"
 					}
 				}
 			},
