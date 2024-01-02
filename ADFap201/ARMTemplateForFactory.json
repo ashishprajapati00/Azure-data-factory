@@ -2708,7 +2708,8 @@
 								"datasetParameters": {
 									"stagingwebloginputmetricStream": {},
 									"stagingwebloginputmetricOutputstream": {}
-								}
+								},
+								"linkedServiceParameters": {}
 							},
 							"staging": {},
 							"compute": {
@@ -4266,6 +4267,61 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/WebMetrics')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "apsqldb201",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "Minimum",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "Maximum",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "Average",
+						"type": "decimal",
+						"precision": 18,
+						"scale": 0
+					},
+					{
+						"name": "Metrictime",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "MetricName",
+						"type": "varchar"
+					},
+					{
+						"name": "Tier",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "WebMetrics"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/apsqldb201')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/convert_csv_parquet')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -4762,6 +4818,42 @@
 					}
 				},
 				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADFapDL201')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/webloginputmetricoutput')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADFapDL201",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "webloginputmetricoutput"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"average": {
+							"type": "number"
+						},
+						"time": {
+							"type": "string"
+						},
+						"metricName": {
+							"type": "string"
+						}
+					}
+				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ADFapDL201')]"
@@ -5857,7 +5949,7 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "stagingwebloginputmetric",
+								"referenceName": "stagingwebloginputmetric201",
 								"type": "DatasetReference"
 							},
 							"name": "stagingwebloginputmetricStream"
@@ -5878,11 +5970,27 @@
 						}
 					],
 					"scriptLines": [
-						"source(allowSchemaDrift: true,",
+						"source(output(",
+						"          count as integer,",
+						"          total as double,",
+						"          minimum as double,",
+						"          maximum as double,",
+						"          average as double,",
+						"          resourceId as string,",
+						"          time as string,",
+						"          metricName as string,",
+						"          timeGrain as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
 						"     documentForm: 'documentPerLine') ~> stagingwebloginputmetricStream",
-						"stagingwebloginputmetricStream select(skipDuplicateMapInputs: true,",
+						"stagingwebloginputmetricStream select(mapColumn(",
+						"          average,",
+						"          time,",
+						"          metricName",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select",
 						"select sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -5895,7 +6003,7 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/stagingwebloginputmetric')]",
+				"[concat(variables('factoryId'), '/datasets/stagingwebloginputmetric201')]",
 				"[concat(variables('factoryId'), '/datasets/Json2')]"
 			]
 		},
@@ -5907,62 +6015,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/WebMetrics')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "apsqldb201",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "Minimum",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 0
-					},
-					{
-						"name": "Maximum",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 0
-					},
-					{
-						"name": "Average",
-						"type": "decimal",
-						"precision": 18,
-						"scale": 0
-					},
-					{
-						"name": "Metrictime",
-						"type": "datetime",
-						"precision": 23,
-						"scale": 3
-					},
-					{
-						"name": "MetricName",
-						"type": "varchar"
-					},
-					{
-						"name": "Tier",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "WebMetrics"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/apsqldb201')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/webloginputmetricoutput')]",
+			"name": "[concat(parameters('factoryName'), '/stagingwebloginputmetric201')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -5975,19 +6028,38 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileSystem": "webloginputmetricoutput"
+						"fileName": "PT1H.json",
+						"fileSystem": "stagingwebloginputmetric"
 					}
 				},
 				"schema": {
 					"type": "object",
 					"properties": {
+						"count": {
+							"type": "integer"
+						},
+						"total": {
+							"type": "number"
+						},
+						"minimum": {
+							"type": "number"
+						},
+						"maximum": {
+							"type": "number"
+						},
 						"average": {
 							"type": "number"
+						},
+						"resourceId": {
+							"type": "string"
 						},
 						"time": {
 							"type": "string"
 						},
 						"metricName": {
+							"type": "string"
+						},
+						"timeGrain": {
 							"type": "string"
 						}
 					}
