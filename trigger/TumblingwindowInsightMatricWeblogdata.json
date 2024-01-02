@@ -2,7 +2,7 @@
 	"name": "TumblingwindowInsightMatricWeblogdata",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipeline": {
 			"pipelineReference": {
 				"referenceName": "23_readweblogMetric",
