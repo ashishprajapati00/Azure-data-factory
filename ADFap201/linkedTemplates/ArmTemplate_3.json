@@ -982,6 +982,7 @@
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
+						"     purgeFiles: true,",
 						"     documentForm: 'documentPerLine') ~> stagingwebloginputmetricStream",
 						"stagingwebloginputmetricStream select(mapColumn(",
 						"          average,",
