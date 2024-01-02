@@ -31,12 +31,7 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     documentForm: 'documentPerLine') ~> stagingwebloginputmetricStream",
-				"stagingwebloginputmetricStream select(mapColumn(",
-				"          average,",
-				"          time,",
-				"          metricName",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
+				"stagingwebloginputmetricStream select(skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select",
 				"select sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -44,12 +39,7 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true,",
-				"     mapColumn(",
-				"          average,",
-				"          time,",
-				"          metricName",
-				"     )) ~> stagingwebloginputmetricOutputstream"
+				"     skipDuplicateMapOutputs: true) ~> stagingwebloginputmetricOutputstream"
 			]
 		}
 	}
