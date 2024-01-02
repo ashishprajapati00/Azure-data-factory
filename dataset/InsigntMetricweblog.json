@@ -1,0 +1,19 @@
+{
+	"name": "InsigntMetricweblog",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ADFapDL201",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "resourceId=/SUBSCRIPTIONS/B96C636D-423F-4D77-AC11-6424D1C741B8/RESOURCEGROUPS/APP-GRP/PROVIDERS/MICROSOFT.WEB/SITES/WEBAPP201",
+				"fileSystem": "insights-metrics-pt1m"
+			}
+		},
+		"schema": {}
+	}
+}
