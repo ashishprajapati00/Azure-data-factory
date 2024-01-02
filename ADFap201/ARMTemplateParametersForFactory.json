@@ -46,6 +46,9 @@
 		},
 		"linkedService1_properties_typeProperties_url": {
 			"value": "https://storagedatalake201.dfs.core.windows.net/"
+		},
+		"BlobcontainerTrigger_properties_typeProperties_scope": {
+			"value": "/subscriptions/b96c636d-423f-4d77-ac11-6424d1c741b8/resourceGroups/resgrp1/providers/Microsoft.Storage/storageAccounts/storagedatalake201"
 		}
 	}
 }

@@ -62,6 +62,10 @@
 		"linkedService1_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://storagedatalake201.dfs.core.windows.net/"
+		},
+		"BlobcontainerTrigger_properties_typeProperties_scope": {
+			"type": "string",
+			"defaultValue": "/subscriptions/b96c636d-423f-4d77-ac11-6424d1c741b8/resourceGroups/resgrp1/providers/Microsoft.Storage/storageAccounts/storagedatalake201"
 		}
 	},
 	"variables": {
@@ -6102,6 +6106,57 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ADFapDL201')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BlobTrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Minute",
+						"interval": 15,
+						"startTime": "2024-01-02T18:22:00",
+						"endTime": "2024-01-02T20:22:00",
+						"timeZone": "Eastern Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BlobcontainerTrigger')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "23_readweblogMetric",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "BlobEventsTrigger",
+				"typeProperties": {
+					"blobPathBeginsWith": "/stagingwebloginputmetric/blobs/PT1H",
+					"ignoreEmptyBlobs": false,
+					"scope": "[parameters('BlobcontainerTrigger_properties_typeProperties_scope')]",
+					"events": [
+						"Microsoft.Storage.BlobCreated"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/23_readweblogMetric')]"
 			]
 		}
 	]
