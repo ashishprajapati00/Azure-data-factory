@@ -1,0 +1,25 @@
+{
+	"name": "BlobTrigger",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "23_readweblogMetric",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Minute",
+				"interval": 15,
+				"startTime": "2024-01-03T18:22:00",
+				"endTime": "2024-01-02T20:22:00",
+				"timeZone": "Eastern Standard Time"
+			}
+		}
+	}
+}
