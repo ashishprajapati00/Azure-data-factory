@@ -1,5 +1,5 @@
 {
-	"name": "Json2",
+	"name": "stagingweblogoutput",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ADFapDL201",

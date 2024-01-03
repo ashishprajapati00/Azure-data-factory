@@ -9,16 +9,17 @@
 						"referenceName": "stagingwebloginputmetric201",
 						"type": "DatasetReference"
 					},
-					"name": "stagingwebloginputmetricStream"
+					"name": "stagingweblogInputStream"
 				}
 			],
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "Json2",
+						"referenceName": "stagingweblogoutput",
 						"type": "DatasetReference"
 					},
-					"name": "stagingwebloginputmetricOutputstream"
+					"name": "stagingweblogoutput",
+					"description": "Export data to "
 				}
 			],
 			"transformations": [
@@ -27,12 +28,33 @@
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          count as integer,",
+				"          total as integer,",
+				"          minimum as integer,",
+				"          maximum as integer,",
+				"          resourceId as string,",
+				"          time as string,",
+				"          metricName as string,",
+				"          timeGrain as string,",
+				"          AccountResourceId as string,",
+				"          ApiName as string,",
+				"          Authentication as string,",
+				"          GeoType as string,",
+				"          ResponseType as string,",
+				"          TransactionType as string,",
+				"          average as integer",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
-				"     purgeFiles: true,",
-				"     documentForm: 'documentPerLine') ~> stagingwebloginputmetricStream",
-				"stagingwebloginputmetricStream select(skipDuplicateMapInputs: true,",
+				"     documentForm: 'documentPerLine') ~> stagingweblogInputStream",
+				"stagingweblogInputStream select(mapColumn(",
+				"          time,",
+				"          metricName,",
+				"          average",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select",
 				"select sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
@@ -40,7 +62,7 @@
 				"     preCommands: [],",
 				"     postCommands: [],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> stagingwebloginputmetricOutputstream"
+				"     skipDuplicateMapOutputs: true) ~> stagingweblogoutput"
 			]
 		}
 	}

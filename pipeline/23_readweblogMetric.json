@@ -36,6 +36,8 @@
 			{
 				"name": "Copytosqlpooltable",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "ReadWebLogMetrix",
@@ -58,7 +60,6 @@
 						"storeSettings": {
 							"type": "AzureBlobFSReadSettings",
 							"recursive": true,
-							"wildcardFileName": "*.json",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -76,29 +77,7 @@
 						"mappings": [
 							{
 								"source": {
-									"path": "$['average']"
-								},
-								"sink": {
-									"name": "Average",
-									"type": "Decimal"
-								}
-							},
-							{
-								"source": {
-									"path": "$['time']"
-								},
-								"sink": {
-									"name": "Metrictime",
-									"type": "DateTime"
-								}
-							},
-							{
-								"source": {
-									"path": "$['metricName']"
-								},
-								"sink": {
-									"name": "MetricName",
-									"type": "String"
+									"path": "$"
 								}
 							}
 						],
@@ -107,7 +86,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Json2",
+						"referenceName": "stagingweblogoutput",
 						"type": "DatasetReference"
 					}
 				],
@@ -121,6 +100,8 @@
 			{
 				"name": "Deleteoutputfiles",
 				"type": "Delete",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copytosqlpooltable",
@@ -154,6 +135,8 @@
 			{
 				"name": "CopyfromInsightMetric",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -193,72 +176,45 @@
 							{
 								"source": {
 									"path": "$['total']"
-								},
-								"sink": {
-									"path": "$['total']"
 								}
 							},
 							{
 								"source": {
-									"path": "$['minimum']"
-								},
-								"sink": {
 									"path": "$['minimum']"
 								}
 							},
 							{
 								"source": {
 									"path": "$['maximum']"
-								},
-								"sink": {
-									"path": "$['maximum']"
 								}
 							},
 							{
 								"source": {
-									"path": "$['average']"
-								},
-								"sink": {
 									"path": "$['average']"
 								}
 							},
 							{
 								"source": {
 									"path": "$['resourceId']"
-								},
-								"sink": {
-									"path": "$['resourceId']"
 								}
 							},
 							{
 								"source": {
-									"path": "$['time']"
-								},
-								"sink": {
 									"path": "$['time']"
 								}
 							},
 							{
 								"source": {
 									"path": "$['metricName']"
-								},
-								"sink": {
-									"path": "$['metricName']"
 								}
 							},
 							{
 								"source": {
 									"path": "$['timeGrain']"
-								},
-								"sink": {
-									"path": "$['timeGrain']"
 								}
 							},
 							{
 								"source": {
-									"path": "$['count']"
-								},
-								"sink": {
 									"path": "$['count']"
 								}
 							}
@@ -273,7 +229,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "stagingwebloginputmetric",
+						"referenceName": "staging_weblog_input",
 						"type": "DatasetReference"
 					}
 				]

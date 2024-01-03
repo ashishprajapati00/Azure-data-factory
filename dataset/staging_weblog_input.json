@@ -1,5 +1,5 @@
 {
-	"name": "Json2",
+	"name": "staging_weblog_input",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ADFapDL201",
@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileSystem": "staging-weblog-output"
+				"fileSystem": "staging-weblog-input"
 			}
 		},
 		"schema": {}

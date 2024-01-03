@@ -10,9 +10,59 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"fileSystem": "stagingwebloginputmetric"
+				"fileName": "PT1H.json",
+				"fileSystem": "staging-weblog-input"
 			}
 		},
-		"schema": {}
+		"schema": {
+			"type": "object",
+			"properties": {
+				"count": {
+					"type": "integer"
+				},
+				"total": {
+					"type": "integer"
+				},
+				"minimum": {
+					"type": "integer"
+				},
+				"maximum": {
+					"type": "integer"
+				},
+				"resourceId": {
+					"type": "string"
+				},
+				"time": {
+					"type": "string"
+				},
+				"metricName": {
+					"type": "string"
+				},
+				"timeGrain": {
+					"type": "string"
+				},
+				"AccountResourceId": {
+					"type": "string"
+				},
+				"ApiName": {
+					"type": "string"
+				},
+				"Authentication": {
+					"type": "string"
+				},
+				"GeoType": {
+					"type": "string"
+				},
+				"ResponseType": {
+					"type": "string"
+				},
+				"TransactionType": {
+					"type": "string"
+				},
+				"average": {
+					"type": "integer"
+				}
+			}
+		}
 	}
 }
