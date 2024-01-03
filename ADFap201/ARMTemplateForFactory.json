@@ -2732,6 +2732,8 @@
 					{
 						"name": "Copytosqlpooltable",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "ReadWebLogMetrix",
@@ -2973,7 +2975,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/08_dataflow_readweeblog')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
 				"[concat(variables('factoryId'), '/datasets/stagingweblogoutput')]",
 				"[concat(variables('factoryId'), '/datasets/WebMetrics')]",
 				"[concat(variables('factoryId'), '/datasets/Json2')]",
