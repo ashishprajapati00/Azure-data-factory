@@ -1,0 +1,253 @@
+{
+	"name": "02_Write_dedicated_SQLPool",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "Sparkpool201",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "5bc20f8c-91d6-4c2b-ae2c-141a46d35a9b"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/b96c636d-423f-4d77-ac11-6424d1c741b8/resourceGroups/resgrp1/providers/Microsoft.Synapse/workspaces/apsynapseworkspace201/bigDataPools/Sparkpool201",
+				"name": "Sparkpool201",
+				"type": "Spark",
+				"endpoint": "https://apsynapseworkspace201.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Sparkpool201",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.3",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"\r\n",
+					"df = spark.read.option(\"header\",\"true\").csv(\"abfss://csv@storagedatalake201.dfs.core.windows.net/Log.csv\")\r\n",
+					"display(df)\r\n",
+					" \r\n",
+					"# If you want to use SQL statements against your data frame, you can create a view on top of the data frame\r\n",
+					" \r\n",
+					"df.createOrReplaceTempView(\"Logdata\")\r\n",
+					" \r\n",
+					"%%sql\r\n",
+					"SELECT * FROM Logdata\r\n",
+					" \r\n",
+					"# You can also use PySpark as it is to look at the data\r\n",
+					"# Basically use the SQL API to work with your data\r\n",
+					" \r\n",
+					"sqldf=spark.sql(\"SELECT * FROM Logdata\")\r\n",
+					"display(sqldf)\r\n",
+					" \r\n",
+					"# To write to pooldb\r\n",
+					"# We need to match the schema properly\r\n",
+					"# Make sure the Azure admin has the storage blob reader and contributor role\r\n",
+					" \r\n",
+					"from pyspark.sql.types import StructType,StringType,TimestampType\r\n",
+					" \r\n",
+					"dataSchema = StructType() \\\r\n",
+					"    .add(\"Correlation id\", StringType(), True) \\\r\n",
+					"    .add(\"Operation name\", StringType(), True) \\\r\n",
+					"    .add(\"Status\", StringType(), True) \\\r\n",
+					"    .add(\"Event category\",StringType(), True) \\\r\n",
+					"    .add(\"Level\",StringType(),True) \\\r\n",
+					"    .add(\"Time\", TimestampType(), True) \\\r\n",
+					"    .add(\"Subscription\",StringType(), True) \\\r\n",
+					"    .add(\"Event initiated by\", StringType(), True) \\\r\n",
+					"    .add(\"Resource type\",StringType(),True) \\\r\n",
+					"    .add(\"Resource group\",StringType(),True) \\\r\n",
+					"    .add(\"Resource\",StringType(),True)\r\n",
+					" \r\n",
+					"df = spark.read.format(\"csv\") \\\r\n",
+					".option(\"header\",True) \\\r\n",
+					".schema(dataSchema) \\\r\n",
+					".load(\"abfss://csv@storagedatalake201.dfs.core.windows.net/Log.csv\")\r\n",
+					" \r\n",
+					"display(df)\r\n",
+					" \r\n",
+					" \r\n",
+					" \r\n",
+					"import com.microsoft.spark.sqlanalytics\r\n",
+					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
+					" \r\n",
+					"df.write \\\r\n",
+					"    .option(Constants.SERVER,\"https://storagedatalake201.dfs.core.windows.net\") \\\r\n",
+					"    .option(Constants.USER,\"sqladmin\") \\\r\n",
+					"    .option(Constants.PASSWORD,\"Dasnadas9\") \\\r\n",
+					"    .option(Constants.DATA_SOURCE,\"sqlpooldb\") \\\r\n",
+					"    .option(Constants.TEMP_FOLDER,\"abfss://csv@storagedatalake201.dfs.core.windows.net\") \\\r\n",
+					"    .option(Constants.STAGING_STORAGE_ACCOUNT_KEY,\"sp=r&st=2024-01-03T14:22:29Z&se=2024-01-03T22:22:29Z&spr=https&sv=2022-11-02&sr=c&sig=2BSL%2BFT5KoOR%2B%2BJaifNfOtagza8QGHtuXeVwi4V5NV8%3D\") \\\r\n",
+					"    .mode(\"overwrite\") \\\r\n",
+					"    .synapsesql(\"sqlpooldb.dbo.pool_logdata\")  \r\n",
+					"\r\n",
+					"\r\n",
+					""
+				],
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"df = spark.read.option(\"header\",\"true\").csv(\"abfss://csv@storagedatalake201.dfs.core.windows.net/Log.csv\")\r\n",
+					"display(df)\r\n",
+					" \r\n",
+					"# If you want to use SQL statements against your data frame, you can create a view on top of the data frame\r\n",
+					" \r\n",
+					"df.createOrReplaceTempView(\"Logdata\")\r\n",
+					" \r\n",
+					""
+				],
+				"execution_count": 2
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "sparksql"
+					},
+					"collapsed": false
+				},
+				"source": [
+					"%%sql\r\n",
+					"SELECT * FROM Logdata"
+				],
+				"execution_count": 3
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"# You can also use PySpark as it is to look at the data\r\n",
+					"# Basically use the SQL API to work with your data\r\n",
+					" \r\n",
+					"sqldf=spark.sql(\"SELECT * FROM Logdata\")\r\n",
+					"display(sqldf)"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"# To write to pooldb\r\n",
+					"# We need to match the schema properly\r\n",
+					"# Make sure the Azure admin has the storage blob reader and contributor role\r\n",
+					" \r\n",
+					"from pyspark.sql.types import StructType,StringType,TimestampType\r\n",
+					" \r\n",
+					"dataSchema = StructType() \\\r\n",
+					"    .add(\"Correlation id\", StringType(), True) \\\r\n",
+					"    .add(\"Operation name\", StringType(), True) \\\r\n",
+					"    .add(\"Status\", StringType(), True) \\\r\n",
+					"    .add(\"Event category\",StringType(), True) \\\r\n",
+					"    .add(\"Level\",StringType(),True) \\\r\n",
+					"    .add(\"Time\", TimestampType(), True) \\\r\n",
+					"    .add(\"Subscription\",StringType(), True) \\\r\n",
+					"    .add(\"Event initiated by\", StringType(), True) \\\r\n",
+					"    .add(\"Resource type\",StringType(),True) \\\r\n",
+					"    .add(\"Resource group\",StringType(),True) \\\r\n",
+					"    .add(\"Resource\",StringType(),True)\r\n",
+					" \r\n",
+					"df = spark.read.format(\"csv\") \\\r\n",
+					".option(\"header\",True) \\\r\n",
+					".schema(dataSchema) \\\r\n",
+					".load(\"abfss://csv@storagedatalake201.dfs.core.windows.net/Log.csv\")\r\n",
+					" \r\n",
+					"display(df)\r\n",
+					" \r\n",
+					" \r\n",
+					" \r\n",
+					"import com.microsoft.spark.sqlanalytics\r\n",
+					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
+					" \r\n",
+					"df.write \\\r\n",
+					"    .option(Constants.SERVER,\"https://storagedatalake201.dfs.core.windows.net\") \\\r\n",
+					"    .option(Constants.USER,\"sqladmin\") \\\r\n",
+					"    .option(Constants.PASSWORD,\"Dasnadas9\") \\\r\n",
+					"    .option(Constants.DATA_SOURCE,\"sqlpooldb\") \\\r\n",
+					"    .option(Constants.TEMP_FOLDER,\"abfss://csv@storagedatalake201.dfs.core.windows.net\") \\\r\n",
+					"    .option(Constants.STAGING_STORAGE_ACCOUNT_KEY,\"sp=r&st=2024-01-03T14:22:29Z&se=2024-01-03T22:22:29Z&spr=https&sv=2022-11-02&sr=c&sig=2BSL%2BFT5KoOR%2B%2BJaifNfOtagza8QGHtuXeVwi4V5NV8%3D\") \\\r\n",
+					"    .mode(\"overwrite\") \\\r\n",
+					"    .synapsesql(\"sqlpooldb.dbo.pool_logdata\")  \r\n",
+					"\r\n",
+					""
+				],
+				"execution_count": 5
+			}
+		]
+	}
+}

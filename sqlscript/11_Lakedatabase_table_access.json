@@ -1,0 +1,17 @@
+{
+	"name": "11_Lakedatabase_table_access",
+	"properties": {
+		"content": {
+			"query": "select * from accountingbasis",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "appdb",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

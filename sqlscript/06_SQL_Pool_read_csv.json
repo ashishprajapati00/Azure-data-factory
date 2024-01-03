@@ -1,0 +1,17 @@
+{
+	"name": "06_SQL_Pool_read_csv",
+	"properties": {
+		"content": {
+			"query": "-- Lab - SQL Pool - External Tables - CSV\n\nCREATE DATABASE SCOPED CREDENTIAL AzureStorageCredential\nWITH\n  IDENTITY = 'storagedatalake201',\n  SECRET = 'sp=r&st=2023-12-30T03:37:29Z&se=2023-12-30T11:37:29Z&spr=https&sv=2022-11-02&sr=c&sig=ZXTh1iiz107jOLraMqbxMM3ZJRKVPDAeZnlyRoUQhvs%3D';\n\n\n\nCREATE EXTERNAL DATA SOURCE log_data\nWITH (    LOCATION   = 'abfss://csv@storagedatalake201.dfs.core.windows.net',\n          CREDENTIAL = AzureStorageCredential,\n          TYPE = HADOOP\n)\n\n\n\nCREATE EXTERNAL FILE FORMAT TextFileFormat WITH (  \n      FORMAT_TYPE = DELIMITEDTEXT,  \n    FORMAT_OPTIONS (  \n        FIELD_TERMINATOR = ',',\n        FIRST_ROW = 2))\n\n\n\n\nCREATE EXTERNAL TABLE [logdata]\n(\n    [Correlation id] [varchar](200) NULL,\n\t[Operation name] [varchar](200) NULL,\n\t[Status] [varchar](100) NULL,\n\t[Event category] [varchar](100) NULL,\n\t[Level] [varchar](100) NULL,\n\t[Time] [datetime] NULL,\n\t[Subscription] [varchar](200) NULL,\n\t[Event initiated by] [varchar](1000) NULL,\n\t[Resource type] [varchar](1000) NULL,\n\t[Resource group] [varchar](1000) NULL,\n    [Resource] [varchar](2000) NULL\n)\nWITH (\n LOCATION = '/Log.csv',\n    DATA_SOURCE = log_data,  \n    FILE_FORMAT = TextFileFormat\n)\n\n\n\nSELECT * FROM [logdata]\n\n\n\n\n-- Error\n-- HdfsBridge::recordReaderFillBuffer - Unexpected error encountered filling record reader buffer: HadoopSqlException: Error converting data type VARCHAR to DATETIME\n\nDROP EXTERNAL TABLE [logdata]\n\n\nCREATE EXTERNAL TABLE [logdata]\n(\n    [Correlation id] [varchar](200) NULL,\n\t[Operation name] [varchar](200) NULL,\n\t[Status] [varchar](100) NULL,\n\t[Event category] [varchar](100) NULL,\n\t[Level] [varchar](100) NULL,\n\t[Time] [varchar](500) NULL,\n\t[Subscription] [varchar](200) NULL,\n\t[Event initiated by] [varchar](1000) NULL,\n\t[Resource type] [varchar](1000) NULL,\n\t[Resource group] [varchar](1000) NULL,\n    [Resource] [varchar](2000) NULL\n)\nWITH (\n LOCATION = '/Log.csv',\n    DATA_SOURCE = log_data,  \n    FILE_FORMAT = TextFileFormat\n)\n\n\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "sqlpooldb",
+				"poolName": "sqlpooldb"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

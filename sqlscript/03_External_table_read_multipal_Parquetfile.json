@@ -1,0 +1,17 @@
+{
+	"name": "03_External_table_read_multipal_Parquetfile",
+	"properties": {
+		"content": {
+			"query": "-- Lab - External Tables - Parquet file\n\n-- If we need to drop the existing artefacts\n\nDROP EXTERNAL TABLE [logdata_parquet]\nDROP EXTERNAL DATA SOURCE log_data_parquet\nDROP DATABASE SCOPED CREDENTIAL SasToken\n\n\n\n-- Then we can recreate the required credentials\n\nCREATE DATABASE SCOPED CREDENTIAL SasToken\nWITH IDENTITY='SHARED ACCESS SIGNATURE'\n, SECRET = 'sp=r&st=2023-12-30T02:59:52Z&se=2023-12-30T10:59:52Z&spr=https&sv=2022-11-02&sr=c&sig=IQnSB4ofb5h2XuZg6yuxJBwWNLCSTRL37k9oRJ%2BWoBE%3D'\n\n\nCREATE EXTERNAL DATA SOURCE log_data_parquet\nWITH (    LOCATION   = 'https://storagedatalake201.dfs.core.windows.net/parquet',\n          CREDENTIAL = SasToken\n)\n\n\nCREATE EXTERNAL FILE FORMAT parquetfile  \nWITH (  \n    FORMAT_TYPE = PARQUET,  \n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'  \n    \n);\n\n\n-- Lab - External Tables - Multiple Parquet files\n\nDROP EXTERNAL TABLE [logdata_parquet]\n\nCREATE EXTERNAL TABLE [logdata_parquet]\n(\n    [Correlationid] [varchar](200) NULL,\n\t[Operationname] [varchar](200) NULL,\n\t[Status] [varchar](100) NULL,\n\t[Eventcategory] [varchar](100) NULL,\n\t[Level] [varchar](100) NULL,\n\t[Time] [varchar] NULL,\n\t[Subscription] [varchar](200) NULL,\n\t[Eventinitiated by] [varchar](1000) NULL,\n\t[Resourcetype] [varchar](1000) NULL,\n\t[Resourcegroup] [varchar](1000) NULL,\n    [Resource] [varchar](2000) NULL)\nWITH (\n LOCATION = '/',\n    DATA_SOURCE = log_data_parquet,  \n    FILE_FORMAT = parquetfile\n)\n\n\nSELECT * FROM [logdata_parquet]\n\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "appdb",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
