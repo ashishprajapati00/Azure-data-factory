@@ -2733,6 +2733,8 @@
 					{
 						"name": "Copytosqlpooltable",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "ReadWebLogMetrix",
@@ -2820,6 +2822,8 @@
 					{
 						"name": "Deleteoutputfiles",
 						"type": "Delete",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "Copytosqlpooltable",
@@ -6146,28 +6150,12 @@
 						}
 					],
 					"scriptLines": [
-						"source(output(",
-						"          count as integer,",
-						"          total as double,",
-						"          minimum as double,",
-						"          maximum as double,",
-						"          average as double,",
-						"          resourceId as string,",
-						"          time as string,",
-						"          metricName as string,",
-						"          timeGrain as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
+						"source(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
 						"     purgeFiles: true,",
 						"     documentForm: 'documentPerLine') ~> stagingwebloginputmetricStream",
-						"stagingwebloginputmetricStream select(mapColumn(",
-						"          average,",
-						"          time,",
-						"          metricName",
-						"     ),",
-						"     skipDuplicateMapInputs: true,",
+						"stagingwebloginputmetricStream select(skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select",
 						"select sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -6205,42 +6193,10 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "PT1H.json",
 						"fileSystem": "stagingwebloginputmetric"
 					}
 				},
-				"schema": {
-					"type": "object",
-					"properties": {
-						"count": {
-							"type": "integer"
-						},
-						"total": {
-							"type": "number"
-						},
-						"minimum": {
-							"type": "number"
-						},
-						"maximum": {
-							"type": "number"
-						},
-						"average": {
-							"type": "number"
-						},
-						"resourceId": {
-							"type": "string"
-						},
-						"time": {
-							"type": "string"
-						},
-						"metricName": {
-							"type": "string"
-						},
-						"timeGrain": {
-							"type": "string"
-						}
-					}
-				}
+				"schema": {}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ADFapDL201')]"
