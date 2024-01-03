@@ -18,14 +18,11 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "7d3c8de8-4f62-4ed3-aa1a-c62719964dd0"
+				"spark.autotune.trackingId": "1779a4cd-b6e1-4d58-8ccd-98ff959ac267"
 			}
 		},
 		"metadata": {
 			"saveOutput": true,
-			"synapse_widget": {
-				"version": "0.1"
-			},
 			"enableDebugMode": false,
 			"kernelspec": {
 				"name": "synapse_pyspark",
@@ -41,14 +38,13 @@
 				"endpoint": "https://apsynapseworkspace201.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/Sparkpool201",
 				"auth": {
 					"type": "AAD",
-					"authResource": "https://dev.azuresynapse.net",
-					"authHeader": null
+					"authResource": "https://dev.azuresynapse.net"
 				},
 				"sparkVersion": "3.3",
 				"nodeCount": 3,
 				"cores": 4,
 				"memory": 28,
-				"extraHeader": null
+				"automaticScaleJobs": false
 			},
 			"sessionKeepAliveTimeout": 30
 		},
@@ -104,15 +100,19 @@
 					"from com.microsoft.spark.sqlanalytics.Constants import Constants\r\n",
 					" \r\n",
 					"df.write \\\r\n",
-					"    .option(Constants.SERVER,\"dataworkspace2000939.sql.azuresynapse.net\") \\\r\n",
-					"    .option(Constants.USER,\"sqladminuser\") \\\r\n",
-					"    .option(Constants.PASSWORD,\"sqlpassword@123\") \\\r\n",
-					"    .option(Constants.DATA_SOURCE,\"pooldb\") \\\r\n",
-					"    .option(Constants.TEMP_FOLDER,\"abfss://staging@datalake244434.dfs.core.windows.net\") \\\r\n",
-					"    .option(Constants.STAGING_STORAGE_ACCOUNT_KEY,\"dilbGv2rof6G4emB0qWgVwAOOexu/bIpvJiUnfal7+klHqCsKLB+JkQzMfRlgu0fm14iUFNHXPeU+AStZZXK2w==\") \\\r\n",
+					"    .option(Constants.SERVER,\"https://storagedatalake201.dfs.core.windows.net\") \\\r\n",
+					"    .option(Constants.USER,\"sqladmin\") \\\r\n",
+					"    .option(Constants.PASSWORD,\"Dasnadas9\") \\\r\n",
+					"    .option(Constants.DATA_SOURCE,\"sqlpooldb\") \\\r\n",
+					"    .option(Constants.TEMP_FOLDER,\"abfss://csv@storagedatalake201.dfs.core.windows.net\") \\\r\n",
+					"    .option(Constants.STAGING_STORAGE_ACCOUNT_KEY,\"sp=r&st=2024-01-03T14:22:29Z&se=2024-01-03T22:22:29Z&spr=https&sv=2022-11-02&sr=c&sig=2BSL%2BFT5KoOR%2B%2BJaifNfOtagza8QGHtuXeVwi4V5NV8%3D\") \\\r\n",
 					"    .mode(\"overwrite\") \\\r\n",
-					"    .synapsesql(\"pooldb.dbo.logdata\")    "
-				]
+					"    .synapsesql(\"sqlpooldb.dbo.pool_logdata\")  \r\n",
+					"\r\n",
+					"\r\n",
+					""
+				],
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
@@ -129,7 +129,8 @@
 				},
 				"source": [
 					""
-				]
+				],
+				"execution_count": null
 			}
 		]
 	}
