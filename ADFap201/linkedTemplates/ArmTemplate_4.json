@@ -441,8 +441,6 @@
 					{
 						"name": "Copytosqlpooltable",
 						"type": "Copy",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "ReadWebLogMetrix",
@@ -483,9 +481,30 @@
 								"mappings": [
 									{
 										"source": {
-											"path": "$"
+											"path": "$['time']"
 										},
-										"sink": {}
+										"sink": {
+											"name": "Metrictime",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['metricName']"
+										},
+										"sink": {
+											"name": "MetricName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['average']"
+										},
+										"sink": {
+											"name": "Average",
+											"type": "Decimal"
+										}
 									}
 								],
 								"collectionReference": ""
