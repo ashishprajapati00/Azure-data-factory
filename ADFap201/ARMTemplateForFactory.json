@@ -2717,8 +2717,8 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"stagingwebloginputmetricStream": {},
-									"stagingwebloginputmetricOutputstream": {}
+									"stagingweblogInputStream": {},
+									"stagingweblogoutput": {}
 								},
 								"linkedServiceParameters": {}
 							},
@@ -2733,6 +2733,8 @@
 					{
 						"name": "Copytosqlpooltable",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "ReadWebLogMetrix",
@@ -2755,7 +2757,6 @@
 								"storeSettings": {
 									"type": "AzureBlobFSReadSettings",
 									"recursive": true,
-									"wildcardFileName": "*.json",
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
@@ -2773,30 +2774,9 @@
 								"mappings": [
 									{
 										"source": {
-											"path": "$['average']"
+											"path": "$"
 										},
-										"sink": {
-											"name": "Average",
-											"type": "Decimal"
-										}
-									},
-									{
-										"source": {
-											"path": "$['time']"
-										},
-										"sink": {
-											"name": "Metrictime",
-											"type": "DateTime"
-										}
-									},
-									{
-										"source": {
-											"path": "$['metricName']"
-										},
-										"sink": {
-											"name": "MetricName",
-											"type": "String"
-										}
+										"sink": {}
 									}
 								],
 								"collectionReference": ""
@@ -2804,7 +2784,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "Json2",
+								"referenceName": "stagingweblogoutput",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -2820,6 +2800,8 @@
 					{
 						"name": "Deleteoutputfiles",
 						"type": "Delete",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "Copytosqlpooltable",
@@ -2854,6 +2836,8 @@
 					{
 						"name": "CopyfromInsightMetric",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -2894,73 +2878,55 @@
 										"source": {
 											"path": "$['total']"
 										},
-										"sink": {
-											"path": "$['total']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['minimum']"
 										},
-										"sink": {
-											"path": "$['minimum']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['maximum']"
 										},
-										"sink": {
-											"path": "$['maximum']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['average']"
 										},
-										"sink": {
-											"path": "$['average']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['resourceId']"
 										},
-										"sink": {
-											"path": "$['resourceId']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['time']"
 										},
-										"sink": {
-											"path": "$['time']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['metricName']"
 										},
-										"sink": {
-											"path": "$['metricName']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['timeGrain']"
 										},
-										"sink": {
-											"path": "$['timeGrain']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['count']"
 										},
-										"sink": {
-											"path": "$['count']"
-										}
+										"sink": {}
 									}
 								]
 							}
@@ -2974,7 +2940,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "stagingwebloginputmetric",
+								"referenceName": "staging_weblog_input",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -2989,10 +2955,11 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/08_dataflow_readweeblog')]",
 				"[concat(variables('factoryId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]",
-				"[concat(variables('factoryId'), '/datasets/Json2')]",
+				"[concat(variables('factoryId'), '/datasets/stagingweblogoutput')]",
 				"[concat(variables('factoryId'), '/datasets/WebMetrics')]",
+				"[concat(variables('factoryId'), '/datasets/Json2')]",
 				"[concat(variables('factoryId'), '/datasets/InsigntMetricweblog')]",
-				"[concat(variables('factoryId'), '/datasets/stagingwebloginputmetric')]"
+				"[concat(variables('factoryId'), '/datasets/staging_weblog_input')]"
 			]
 		},
 		{
@@ -3942,7 +3909,7 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileSystem": "webloginputmetricoutput"
+						"fileSystem": "staging-weblog-output"
 					}
 				},
 				"schema": {}
@@ -6128,16 +6095,17 @@
 								"referenceName": "stagingwebloginputmetric201",
 								"type": "DatasetReference"
 							},
-							"name": "stagingwebloginputmetricStream"
+							"name": "stagingweblogInputStream"
 						}
 					],
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "Json2",
+								"referenceName": "stagingweblogoutput",
 								"type": "DatasetReference"
 							},
-							"name": "stagingwebloginputmetricOutputstream"
+							"name": "stagingweblogoutput",
+							"description": "Export data to "
 						}
 					],
 					"transformations": [
@@ -6146,12 +6114,33 @@
 						}
 					],
 					"scriptLines": [
-						"source(allowSchemaDrift: true,",
+						"source(output(",
+						"          count as integer,",
+						"          total as integer,",
+						"          minimum as integer,",
+						"          maximum as integer,",
+						"          resourceId as string,",
+						"          time as string,",
+						"          metricName as string,",
+						"          timeGrain as string,",
+						"          AccountResourceId as string,",
+						"          ApiName as string,",
+						"          Authentication as string,",
+						"          GeoType as string,",
+						"          ResponseType as string,",
+						"          TransactionType as string,",
+						"          average as integer",
+						"     ),",
+						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     ignoreNoFilesFound: false,",
-						"     purgeFiles: true,",
-						"     documentForm: 'documentPerLine') ~> stagingwebloginputmetricStream",
-						"stagingwebloginputmetricStream select(skipDuplicateMapInputs: true,",
+						"     documentForm: 'documentPerLine') ~> stagingweblogInputStream",
+						"stagingweblogInputStream select(mapColumn(",
+						"          time,",
+						"          metricName,",
+						"          average",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select",
 						"select sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
@@ -6159,13 +6148,13 @@
 						"     preCommands: [],",
 						"     postCommands: [],",
 						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true) ~> stagingwebloginputmetricOutputstream"
+						"     skipDuplicateMapOutputs: true) ~> stagingweblogoutput"
 					]
 				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/stagingwebloginputmetric201')]",
-				"[concat(variables('factoryId'), '/datasets/Json2')]"
+				"[concat(variables('factoryId'), '/datasets/stagingweblogoutput')]"
 			]
 		},
 		{
@@ -6189,10 +6178,60 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileSystem": "stagingwebloginputmetric"
+						"fileName": "PT1H.json",
+						"fileSystem": "staging-weblog-input"
 					}
 				},
-				"schema": {}
+				"schema": {
+					"type": "object",
+					"properties": {
+						"count": {
+							"type": "integer"
+						},
+						"total": {
+							"type": "integer"
+						},
+						"minimum": {
+							"type": "integer"
+						},
+						"maximum": {
+							"type": "integer"
+						},
+						"resourceId": {
+							"type": "string"
+						},
+						"time": {
+							"type": "string"
+						},
+						"metricName": {
+							"type": "string"
+						},
+						"timeGrain": {
+							"type": "string"
+						},
+						"AccountResourceId": {
+							"type": "string"
+						},
+						"ApiName": {
+							"type": "string"
+						},
+						"Authentication": {
+							"type": "string"
+						},
+						"GeoType": {
+							"type": "string"
+						},
+						"ResponseType": {
+							"type": "string"
+						},
+						"TransactionType": {
+							"type": "string"
+						},
+						"average": {
+							"type": "integer"
+						}
+					}
+				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ADFapDL201')]"
@@ -6293,6 +6332,52 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/23_readweblogMetric')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/staging_weblog_input')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADFapDL201",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "staging-weblog-input"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADFapDL201')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/stagingweblogoutput')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ADFapDL201",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileSystem": "staging-weblog-output"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ADFapDL201')]"
 			]
 		}
 	]

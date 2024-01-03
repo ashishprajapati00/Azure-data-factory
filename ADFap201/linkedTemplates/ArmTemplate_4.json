@@ -13,6 +13,254 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/13-filteringrow-loadparquet-pooldb')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "FilterNullvalue",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "03_dataflow_filternullvalue",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"logdataparqetstream": {},
+									"pooldbarquetload": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-01-01T02:28:59Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/14-CopyParquet_Json_Pooldb')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "LoadParquettoJson",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "04_dataflow_LoadParquettpJsontoSqlpool",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"logdataparquetstream": {},
+									"Jsonstream": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					},
+					{
+						"name": "loadjsontosqlpool",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "LoadParquettoJson",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"wildcardFileName": "*.json",
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['Correlationid']"
+										},
+										"sink": {
+											"name": "Correlationid",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Operationname']"
+										},
+										"sink": {
+											"name": "Operationname",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Status']"
+										},
+										"sink": {
+											"name": "Status",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Eventcategory']"
+										},
+										"sink": {
+											"name": "Eventcategory",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Level']"
+										},
+										"sink": {
+											"name": "Level",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Time']"
+										},
+										"sink": {
+											"name": "Time",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Subscription']"
+										},
+										"sink": {
+											"name": "Subscription",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Eventinitiatedby']"
+										},
+										"sink": {
+											"name": "Eventinitiatedby",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Resourcetype']"
+										},
+										"sink": {
+											"name": "Resourcetype",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Resourcegroup']"
+										},
+										"sink": {
+											"name": "Resourcegroup",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['Resource']"
+										},
+										"sink": {
+											"name": "Resource",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "logdatajson",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SQLDW",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-01-01T13:41:02Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/15_loadjsonArraysTosqlpooldb')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -178,8 +426,8 @@
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
-									"stagingwebloginputmetricStream": {},
-									"stagingwebloginputmetricOutputstream": {}
+									"stagingweblogInputStream": {},
+									"stagingweblogoutput": {}
 								},
 								"linkedServiceParameters": {}
 							},
@@ -194,6 +442,8 @@
 					{
 						"name": "Copytosqlpooltable",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "ReadWebLogMetrix",
@@ -216,7 +466,6 @@
 								"storeSettings": {
 									"type": "AzureBlobFSReadSettings",
 									"recursive": true,
-									"wildcardFileName": "*.json",
 									"enablePartitionDiscovery": false
 								},
 								"formatSettings": {
@@ -234,30 +483,9 @@
 								"mappings": [
 									{
 										"source": {
-											"path": "$['average']"
+											"path": "$"
 										},
-										"sink": {
-											"name": "Average",
-											"type": "Decimal"
-										}
-									},
-									{
-										"source": {
-											"path": "$['time']"
-										},
-										"sink": {
-											"name": "Metrictime",
-											"type": "DateTime"
-										}
-									},
-									{
-										"source": {
-											"path": "$['metricName']"
-										},
-										"sink": {
-											"name": "MetricName",
-											"type": "String"
-										}
+										"sink": {}
 									}
 								],
 								"collectionReference": ""
@@ -265,7 +493,7 @@
 						},
 						"inputs": [
 							{
-								"referenceName": "Json2",
+								"referenceName": "stagingweblogoutput",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -281,6 +509,8 @@
 					{
 						"name": "Deleteoutputfiles",
 						"type": "Delete",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [
 							{
 								"activity": "Copytosqlpooltable",
@@ -315,6 +545,8 @@
 					{
 						"name": "CopyfromInsightMetric",
 						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -355,73 +587,55 @@
 										"source": {
 											"path": "$['total']"
 										},
-										"sink": {
-											"path": "$['total']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['minimum']"
 										},
-										"sink": {
-											"path": "$['minimum']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['maximum']"
 										},
-										"sink": {
-											"path": "$['maximum']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['average']"
 										},
-										"sink": {
-											"path": "$['average']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['resourceId']"
 										},
-										"sink": {
-											"path": "$['resourceId']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['time']"
 										},
-										"sink": {
-											"path": "$['time']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['metricName']"
 										},
-										"sink": {
-											"path": "$['metricName']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['timeGrain']"
 										},
-										"sink": {
-											"path": "$['timeGrain']"
-										}
+										"sink": {}
 									},
 									{
 										"source": {
 											"path": "$['count']"
 										},
-										"sink": {
-											"path": "$['count']"
-										}
+										"sink": {}
 									}
 								]
 							}
@@ -435,7 +649,7 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "stagingwebloginputmetric",
+								"referenceName": "staging_weblog_input",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
