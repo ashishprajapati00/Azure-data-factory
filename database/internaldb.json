@@ -1,0 +1,23 @@
+{
+	"name": "internaldb",
+	"properties": {
+		"Name": "internaldb",
+		"EntityType": "DATABASE",
+		"Origin": {
+			"Type": "SPARK"
+		},
+		"Properties": {
+			"IsSyMSCDMDatabase": true,
+			"DerivedModelDBInfo": "{\"ModelDirectives\":{\"BaseModel\":{\"Name\":\"Retail\",\"Version\":\"1.3.0\"}}}"
+		},
+		"Source": {
+			"Provider": "ADLS",
+			"Location": "abfss://csv@storagedatalake201.dfs.core.windows.net/internaldb",
+			"Properties": {
+				"FormatType": "csv",
+				"LinkedServiceName": "apsynapseworkspace201-WorkspaceDefaultStorage"
+			}
+		}
+	},
+	"type": "DATABASE"
+}
