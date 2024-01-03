@@ -36,8 +36,6 @@
 			{
 				"name": "Copytosqlpooltable",
 				"type": "Copy",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "ReadWebLogMetrix",
@@ -123,8 +121,6 @@
 			{
 				"name": "Deleteoutputfiles",
 				"type": "Delete",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [
 					{
 						"activity": "Copytosqlpooltable",
