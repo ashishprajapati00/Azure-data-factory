@@ -1,0 +1,17 @@
+{
+	"name": "04_Read parquet_using_openrowset",
+	"properties": {
+		"content": {
+			"query": "-- Lab - OPENROWSET\n\nSELECT top 1 *\nFROM OPENROWSET(BULK 'https://storagedatalake201.dfs.core.windows.net/parquet/*.parquet',\n                FORMAT = 'PARQUET') AS [logdata_temp]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "appdb",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
